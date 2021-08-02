@@ -46,16 +46,22 @@
       </div>
 
       <div class="form-row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
         <label>Customer NIC Photo :</label>
           <div id="my_camera"></div>
           <br/>
-          <input class="btn btn-info" type="button" value="Take Customer NIC Photo" onClick="take_snapshot_customer_nic()">
+          <input class="btn btn-info" type="button" value="Take Customer NIC Front Photo" onClick="take_snapshot_customer_nic()">
           <input type="hidden" name="image_nic" class="image-tag-nic">
+          <input class="btn btn-primary mt-2" type="button" value="Take Customer NIC Back Photo" onClick="take_snapshot_customer_nic_back()">
+          <input type="hidden" name="image_nic_back" class="image-tag-nic-back">
         </div>
-        <div class="col-md-6 mb-3">
-        <label>Customer NIC Photo Preview:</label>
+        <div class="col-md-3 mb-3">
+        <label>Customer NIC Photo Front Preview:</label>
           <div id="results-nic">Your captured image will appear here...</div>
+        </div>
+        <div class="col-md-3 mb-3">
+        <label>Customer NIC Photo Back Preview:</label>
+          <div id="results-nic-back">Your captured image will appear here...</div>
         </div>
       </div>
 
@@ -70,6 +76,20 @@
         <div class="col-md-6 mb-3">
         <label>Customer License Photo Preview:</label>
           <div id="results-license">Your captured image will appear here...</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-md-6 mb-3">
+        <label>Customer Billing Proof Photo :</label>
+          <div id="my_camera"></div>
+          <br/>
+          <input class="btn btn-info" type="button" value="Take Customer Billing Proof Photo" onClick="take_snapshot_customer_bill()">
+          <input type="hidden" name="image_bill" class="image-tag-bill">
+        </div>
+        <div class="col-md-6 mb-3">
+        <label>Customer Billing Proof Photo Preview:</label>
+          <div id="results-bill">Your captured image will appear here...</div>
         </div>
       </div>
 
@@ -106,12 +126,19 @@
       $image_base64_customer = base64_encode(file_get_contents($_POST['image_customer']));
       $customerPhoto = 'data:image/' . $imageFileType_customer . ';base64,' . $image_base64_customer;
 
-      // Customer NIC Photo
+      // Customer NIC Photo Front
       $target_file_customer_nic = basename($_POST['image_nic']);
       $imageFileType_nic = strtolower(pathinfo($target_file_customer_nic, PATHINFO_EXTENSION));
       $extensions_arr = array("jpg", "jpeg", "png");
       $image_base64_customer_nic = base64_encode(file_get_contents($_POST['image_nic']));
       $customerNICPhoto = 'data:image/' . $imageFileType_nic . ';base64,' . $image_base64_customer_nic;
+
+      // Customer NIC Photo Back
+      $target_file_customer_nic_back = basename($_POST['image_nic_back']);
+      $imageFileType_nic_back = strtolower(pathinfo($target_file_customer_nic, PATHINFO_EXTENSION));
+      $extensions_arr = array("jpg", "jpeg", "png");
+      $image_base64_customer_nic_back = base64_encode(file_get_contents($_POST['image_nic_back']));
+      $customerNICPhotoBack = 'data:image/' . $imageFileType_nic_back . ';base64,' . $image_base64_customer_nic_back;
 
        // Customer license Photo
       $target_file_customer_license = basename($_POST['image_license']);
@@ -120,7 +147,14 @@
       $image_base64_customer_license = base64_encode(file_get_contents($_POST['image_license']));
       $customerLicensePhoto = 'data:image/' . $imageFileType_license . ';base64,' . $image_base64_customer_license;
 
-      $qry1 = "INSERT INTO `customer_details`(`customerName`, `drivingLicenseNo`, `address`, `customerPhoto`, `customerNICPhoto`, `customerLicensePhoto`, `customerSignature`, `Note`, `createDate`) VALUES ('$CustomerName','$DrivingLicenseNo','$Address','$customerPhoto','$customerNICPhoto','$customerLicensePhoto','$customerSignature','$Note','$createDate')";
+       // Customer billing Prof
+       $target_file_customer_bill = basename($_POST['image_bill']);
+       $imageFileType_bill = strtolower(pathinfo($target_file_customer_bill, PATHINFO_EXTENSION));
+       $extensions_arr = array("jpg", "jpeg", "png");
+       $image_base64_customer_bill = base64_encode(file_get_contents($_POST['image_bill']));
+       $customerBillPhoto = 'data:image/' . $imageFileType_bill . ';base64,' . $image_base64_customer_bill;
+
+      $qry1 = "INSERT INTO `customer_details`(`customerName`, `drivingLicenseNo`, `address`, `customerPhoto`, `customerNICPhoto`, `customerNICPhotoBack`, `customerLicensePhoto`, `customerBillPhoto`, `customerSignature`, `Note`, `createDate`) VALUES ('$CustomerName','$DrivingLicenseNo','$Address','$customerPhoto','$customerNICPhoto','$customerNICPhotoBack','$customerLicensePhoto','$customerBillPhoto','$customerSignature','$Note','$createDate')";
       
       if (!mysqli_query($con, $qry1)) {
         die('Error: ' . mysqli_error());
@@ -177,6 +211,14 @@
             document.getElementById('results-nic').innerHTML = '<img src="'+data_uri+'"/>';
         } );
     }
+
+    function take_snapshot_customer_nic_back() {
+        Webcam.snap( function(data_uri) {
+            $(".image-tag-nic-back").val(data_uri);
+            document.getElementById('results-nic-back').innerHTML = '<img src="'+data_uri+'"/>';
+        } );
+    }
+
     function take_snapshot_customer_license() {
         Webcam.snap( function(data_uri) {
             $(".image-tag-license").val(data_uri);
@@ -184,5 +226,11 @@
         } );
     }
     
+    function take_snapshot_customer_bill() {
+        Webcam.snap( function(data_uri) {
+            $(".image-tag-bill").val(data_uri);
+            document.getElementById('results-bill').innerHTML = '<img src="'+data_uri+'"/>';
+        } );
+    }
     
 </script>
